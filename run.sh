@@ -35,7 +35,7 @@ function update_timestamp() {
 # Main function to run the logged in checkin
 function run_logged_in_checkin() {
     local section="logged_in_checkin"
-    local interval=300  # 5 minutes
+    local interval=600  # 10 minutes
 
     if should_run "$section" $interval; then
         echo "Running logged in checkin."
