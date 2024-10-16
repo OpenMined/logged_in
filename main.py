@@ -7,7 +7,7 @@ from syftbox.lib import Client, SyftPermission
 def main():
     # Load the client configuration
     # config_path = os.environ.get("SYFTBOX_CLIENT_CONFIG_PATH", None)
-    client_config = ClientConfig.load()
+    client_config = Client.load()
 
     # Get the current timestamp
     current_timestamp = datetime.now().isoformat()
