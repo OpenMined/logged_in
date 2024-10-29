@@ -4,45 +4,36 @@ from datetime import datetime
 from syftbox.lib import Client, SyftPermission
 
 
-def should_run() -> bool:
-    INTERVAL = 600  # 10 minutes
-    timestamp_file = "./script_timestamps/logged_in_checkin_last_run"
-    os.makedirs(os.path.dirname(timestamp_file), exist_ok=True)
+def should_run(output_file_path: str) -> bool:
+    INTERVAL = 600
+    if not os.path.exists(output_file_path):
+        return True
 
-    now = datetime.now().timestamp()
-    time_diff = INTERVAL  # default to running if no file exists
-    if os.path.exists(timestamp_file):
-        try:
-            with open(timestamp_file, "r") as f:
-                last_run = int(f.read().strip())
-                time_diff = now - last_run
-        except (FileNotFoundError, ValueError):
-            print(f"Unable to read timestamp file: {timestamp_file}")
+    last_modified_time = datetime.fromtimestamp(os.path.getmtime(output_file_path))
+    time_diff = datetime.now() - last_modified_time
 
-    if time_diff >= INTERVAL:
-        with open(timestamp_file, "w") as f:
-            f.write(f"{int(now)}")
+    if time_diff.total_seconds() >= INTERVAL:
         return True
     return False
 
 
 def main():
-    if not should_run():
+    # Prepare output file path
+    client_config = Client.load()
+    output_folder = client_config.datasite_path / "app_pipelines" / "timestamp_recorder"
+    output_file_path = output_folder / "last_check_in.json"
+
+    if not should_run(output_file_path):
         print("Skipping logged in checkin, not enough time has passed.")
         return
 
-    # Load the client configuration
-    client_config = Client.load()
+    # Ensure the output folder exists
+    os.makedirs(output_folder, exist_ok=True)
 
     # Timestamp JSON
     timestamp_data = {"last_check_in": datetime.now().isoformat()}
 
-    # Prepare output folders
-    output_folder = client_config.datasite_path / "app_pipelines" / "timestamp_recorder"
-    os.makedirs(output_folder, exist_ok=True)
-
     # Write timestamp to output file
-    output_file_path = output_folder / "last_check_in.json"
     with open(output_file_path, "w") as f:
         json.dump(timestamp_data, f, indent=2)
 
