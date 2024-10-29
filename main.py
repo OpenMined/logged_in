@@ -4,7 +4,33 @@ from datetime import datetime
 from syftbox.lib import Client, SyftPermission
 
 
+def should_run() -> bool:
+    INTERVAL = 600  # 10 minutes
+    timestamp_file = "./script_timestamps/logged_in_checkin_last_run"
+    os.makedirs(os.path.dirname(timestamp_file), exist_ok=True)
+
+    now = datetime.now().timestamp()
+    time_diff = INTERVAL  # default to running if no file exists
+    if os.path.exists(timestamp_file):
+        try:
+            with open(timestamp_file, "r") as f:
+                last_run = int(f.read().strip())
+                time_diff = now - last_run
+        except (FileNotFoundError, ValueError):
+            print(f"Unable to read timestamp file: {timestamp_file}")
+
+    if time_diff >= INTERVAL:
+        with open(timestamp_file, "w") as f:
+            f.write(f"{int(now)}")
+        return True
+    return False
+
+
 def main():
+    if not should_run():
+        print("Skipping logged in checkin, not enough time has passed.")
+        return
+
     # Load the client configuration
     client_config = Client.load()
 
