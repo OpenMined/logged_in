@@ -6,38 +6,25 @@ from syftbox.lib import Client, SyftPermission
 
 def main():
     # Load the client configuration
-    # config_path = os.environ.get("SYFTBOX_CLIENT_CONFIG_PATH", None)
     client_config = Client.load()
 
-    # Get the current timestamp
-    current_timestamp = datetime.now().isoformat()
-
-    # Prepare the data to be written
-    timestamp_data = {"last_check_in": current_timestamp}
+    # Timestamp JSON
+    timestamp_data = {"last_check_in": datetime.now().isoformat()}
 
     # Prepare output folders
-    output_folder = f"{client_config.sync_folder}/{client_config.email}/app_pipelines/timestamp_recorder/"
+    output_folder = client_config.datasite_path / "app_pipelines" / "timestamp_recorder"
     os.makedirs(output_folder, exist_ok=True)
 
     # Write timestamp to output file
-    output_file_path = f"{output_folder}last_check_in.json"
+    output_file_path = output_folder / "last_check_in.json"
     with open(output_file_path, "w") as f:
         json.dump(timestamp_data, f, indent=2)
 
-    # Write _.syftperm file
-    syftperm_data = {
-        "admin": [client_config.email],
-        "read": ["GLOBAL"],
-        "write": [client_config.email],
-        "filepath": f"{output_folder}_.syftperm",
-        "terminal": False,
-    }
-    syftperm_path = f"{output_folder}_.syftperm"
-    with open(syftperm_path, "w") as f:
-        json.dump(syftperm_data, f, indent=2)
+    # Ensure permission file exists
+    permission = SyftPermission.mine_with_public_read(email=client_config.email)
+    permission.ensure(output_folder)
 
     print(f"Timestamp has been written to {output_file_path}")
-    print(f"_.syftperm file has been written to {syftperm_path}")
 
 
 if __name__ == "__main__":
