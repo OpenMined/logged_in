@@ -1,12 +1,13 @@
-#!/bin/bash
+#!/bin/sh
 
-echo "Running logged in checkin."
+set -e
+
 if [ ! -d ".venv" ]; then
-    echo "Virtual environment not found. Creating one..."
-    uv venv .venv
-    echo "Virtual environment created successfully."
-    uv pip install syftbox 
-else
-    echo "Virtual environment already exists."
+    uv venv
 fi
-uv run python main.py
+
+uv pip install --upgrade syftbox
+
+. .venv/bin/activate
+python main.py
+deactivate

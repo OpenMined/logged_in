@@ -5,7 +5,7 @@ from syftbox.lib import Client, SyftPermission
 
 
 def should_run(output_file_path: str) -> bool:
-    INTERVAL = 600
+    INTERVAL = 300 # 5 minutes
     if not os.path.exists(output_file_path):
         return True
 
@@ -19,12 +19,12 @@ def should_run(output_file_path: str) -> bool:
 
 def main():
     # Prepare output file path
-    client_config = Client.load()
-    output_folder = client_config.datasite_path / "app_pipelines" / "timestamp_recorder"
+    client = Client.load()
+    output_folder = client.datasite_path / "app_pipelines" / "timestamp_recorder"
     output_file_path = output_folder / "last_check_in.json"
 
     if not should_run(output_file_path):
-        print("Skipping logged in checkin, not enough time has passed.")
+        print(f"Skipping check for {output_file_path}")
         return
 
     # Ensure the output folder exists
@@ -38,10 +38,10 @@ def main():
         json.dump(timestamp_data, f, indent=2)
 
     # Ensure permission file exists
-    permission = SyftPermission.mine_with_public_read(email=client_config.email)
+    permission = SyftPermission.mine_with_public_read(email=client.email)
     permission.ensure(output_folder)
 
-    print(f"Timestamp has been written to {output_file_path}")
+    print(f"Set checkin time to", timestamp_data["last_check_in"])
 
 
 if __name__ == "__main__":
