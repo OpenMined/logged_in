@@ -20,7 +20,7 @@ def should_run(output_file_path: str) -> bool:
 def main():
     # Prepare output file path
     client = Client.load()
-    output_folder = client.datasite_path / "app_pipelines" / "timestamp_recorder"
+    output_folder = client.api_data("timestamp_recorder")
     output_file_path = output_folder / "last_check_in.json"
 
     if not should_run(output_file_path):
@@ -41,7 +41,7 @@ def main():
     permission = SyftPermission.mine_with_public_read(email=client.email)
     permission.ensure(output_folder)
 
-    print(f"Set checkin time to", timestamp_data["last_check_in"])
+    print("Set checkin time to", timestamp_data["last_check_in"])
 
 
 if __name__ == "__main__":
