@@ -1,6 +1,6 @@
 import os
 import json
-from datetime import datetime
+from datetime import datetime, UTC
 from syftbox.lib import Client, SyftPermission
 
 
@@ -31,7 +31,7 @@ def main():
     os.makedirs(output_folder, exist_ok=True)
 
     # Timestamp JSON
-    timestamp_data = {"last_check_in": datetime.now().isoformat()}
+    timestamp_data = {"last_check_in": datetime.now(UTC).isoformat()}
 
     # Write timestamp to output file
     with open(output_file_path, "w") as f:
