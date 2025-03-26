@@ -1,7 +1,8 @@
 import os
 import json
 from datetime import datetime, UTC
-from syftbox.lib import Client, SyftPermission
+from syft_core import Client
+from syft_core.permissions import SyftPermission
 
 
 def should_run(output_file_path: str) -> bool:
