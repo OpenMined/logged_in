@@ -1,7 +1,8 @@
 import os
 import json
 from datetime import datetime, UTC
-from syftbox.lib import Client, SyftPermission
+from syft_core import Client
+from syft_core.permissions import SyftPermission
 
 
 def should_run(output_file_path: str) -> bool:
@@ -20,7 +21,7 @@ def should_run(output_file_path: str) -> bool:
 def main():
     # Prepare output file path
     client = Client.load()
-    output_folder = client.api_data("timestamp_recorder")
+    output_folder = client.app_data("timestamp_recorder")
     output_file_path = output_folder / "last_check_in.json"
 
     if not should_run(output_file_path):
