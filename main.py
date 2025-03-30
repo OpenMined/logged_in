@@ -6,7 +6,7 @@ from syft_core.permissions import SyftPermission
 
 
 def should_run(output_file_path: str) -> bool:
-    INTERVAL = 300 # 5 minutes
+    INTERVAL = 300  # 5 minutes
     if not os.path.exists(output_file_path):
         return True
 
@@ -39,8 +39,8 @@ def main():
         json.dump(timestamp_data, f, indent=2)
 
     # Ensure permission file exists
-    permission = SyftPermission.mine_with_public_read(email=client.email)
-    permission.ensure(output_folder)
+    permission = SyftPermission.mine_with_public_read(client, output_folder)
+    permission.save(output_folder)
 
     print("Set checkin time to", timestamp_data["last_check_in"])
 
